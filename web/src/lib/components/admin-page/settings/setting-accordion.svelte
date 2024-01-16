@@ -1,10 +1,46 @@
 <script lang="ts">
   import { slide } from 'svelte/transition';
+  import { page } from '$app/stores';
+  import { goto } from '$app/navigation';
+  import type { SystemConfigDto } from '@immich/sdk';
   export let title: string;
   export let subtitle = '';
-
+  export let key: keyof SystemConfigDto | Array<keyof SystemConfigDto> = [];
   export let isOpen = false;
-  const toggle = () => (isOpen = !isOpen);
+
+  $: openAccordions = ($page.url.searchParams.get('isOpen')?.split(',') ?? []) as Array<keyof SystemConfigDto>;
+  $: openAccordions, handleChange();
+
+  const handleChange = () => {
+    if (key instanceof Array) {
+      isOpen = !!openAccordions.find((item) => key.includes(item));
+    } else {
+      isOpen = openAccordions.includes(key);
+    }
+
+    if (openAccordions.length === 0) {
+      $page.url.searchParams.delete('isOpen');
+    } else {
+      $page.url.searchParams.set('isOpen', openAccordions.join(','));
+    }
+    goto(`?${$page.url.searchParams.toString()}`);
+  };
+
+  const toggle = () => {
+    if (isOpen) {
+      if (key instanceof Array) {
+        openAccordions = openAccordions.filter((item) => key.includes(item));
+      } else {
+        openAccordions = openAccordions.filter((item) => item !== key);
+      }
+    } else {
+      if (key instanceof Array) {
+        openAccordions = [...openAccordions, ...key];
+      } else {
+        openAccordions = [...openAccordions, key];
+      }
+    }
+  };
 </script>
 
 <div class="border-b-[1px] border-gray-200 py-4 dark:border-gray-700">
