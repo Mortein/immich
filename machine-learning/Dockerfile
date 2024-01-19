@@ -1,4 +1,4 @@
-FROM python:3.11-bookworm@sha256:497c00ec2cff14316a6859c4e30fc88e7ab1f11dd254fb43b8f4b201ca657596 as builder
+FROM python:3.11-bookworm@sha256:8d773321add21be41f1f891b43177a41aaae0d1b83f3638872ec84636179594a as builder
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
   PYTHONUNBUFFERED=1 \
@@ -27,7 +27,7 @@ RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
   fi
 
 
-FROM python:3.11-slim-bookworm@sha256:637774748f62b832dc11e7b286e48cd716727ed04b45a0322776c01bc526afc3
+FROM python:3.11-slim-bookworm@sha256:d11b9bd5e49ea7401753d78f4d3b56f3aec952b85b49bcae88981f0452818e0b
 ARG TARGETPLATFORM
 RUN apt-get update && apt-get install -y --no-install-recommends tini libmimalloc2.0 && rm -rf /var/lib/apt/lists/*
 
